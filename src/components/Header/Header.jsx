@@ -1,13 +1,16 @@
 import { AppBar, Toolbar, Typography } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./Header.css";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../../providers/AuthProvider";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState("Ethereum Kovan");
   const [menuIcon, setMenuIcon] = useState(" /images/menuIcon1.webp");
-
+  const [isUserOpen, setIsUserOpen] = useState(false);
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
@@ -16,6 +19,13 @@ const Header = () => {
     setIsOpen(false);
     setMenuIcon(icon);
   };
+
+  const handleUserToggle = () => {
+    setIsUserOpen(!isUserOpen);
+  };
+  const { user } = useContext(AuthContext);
+  console.log(user);
+  console.log(isUserOpen);
   return (
     <>
       <AppBar
@@ -38,6 +48,7 @@ const Header = () => {
           <div
             style={{
               display: "flex",
+              alignItems: "center",
               gap: 6,
             }}>
             <div className="dropdown-container">
@@ -177,7 +188,25 @@ const Header = () => {
               <AccountBalanceWalletIcon></AccountBalanceWalletIcon>
               Connect Wallet
             </button>
-            <button>user icon</button>
+            <div className="user-dropdown-container">
+              <button className="btn-user" onClick={handleUserToggle}>
+                <AccountCircleOutlinedIcon></AccountCircleOutlinedIcon>
+              </button>
+
+              {isUserOpen && (
+                <div className="user-dropdown-menu">
+                  {user ? (
+                    <div className="user-dropdown-item">Logout</div>
+                  ) : (
+                    <Link style={{ textDecoration: "none" }} to={"/login"}>
+                      <div className="user-dropdown-item">Login</div>
+                    </Link>
+                  )}
+                  <div className="user-dropdown-item">SignUp</div>
+                  <div className="user-dropdown-item">FAQ</div>
+                </div>
+              )}
+            </div>
           </div>
         </Toolbar>
       </AppBar>

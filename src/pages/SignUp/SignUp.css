@@ -1,0 +1,18 @@
+.signUp-container {
+  margin: 0 auto;
+  width: 350px;
+  padding: 20px;
+  margin-top: 30px;
+  margin-bottom: 100px;
+}
+
+.signUp-button {
+  width: 100%;
+  margin: 0 20px;
+  background-color: #9b1fe9;
+}
+.btn-signUp-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}

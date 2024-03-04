@@ -9,6 +9,7 @@
   background-color: white;
   color: #6d7380;
   cursor: pointer;
+  padding: 5px 10px;
 }
 .dropdown-menu {
   position: absolute;
@@ -61,4 +62,31 @@
   padding: 5px 10px;
   border: 2px solid #9b1fe9;
   border-radius: 5px;
+}
+
+.user-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+.btn-user {
+  border: none;
+  border-radius: 20px;
+  background-color: #acb3c4;
+  cursor: pointer;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: 50px;
+  display: flex;
+  flex-direction: column;
+
+  right: 0;
+  padding: 5px 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-dropdown-item {
+  color: #6d7380;
+  padding: 5px;
 }
