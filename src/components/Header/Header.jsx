@@ -2,7 +2,7 @@ import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 import "./Header.css";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState("Ethereum Kovan");
@@ -173,7 +173,10 @@ const Header = () => {
                 </div>
               )}
             </div>
-            <button>Connect Wallet</button>
+            <button className="wallet-button">
+              <AccountBalanceWalletIcon></AccountBalanceWalletIcon>
+              Connect Wallet
+            </button>
             <button>user icon</button>
           </div>
         </Toolbar>
