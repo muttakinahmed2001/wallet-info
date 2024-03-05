@@ -8,14 +8,60 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./SignUp.css";
 import { Link } from "react-router-dom";
+import { useGoogleLogin } from "react-google-login";
+import { AuthContext } from "../../providers/AuthProvider";
+import { gapi } from "gapi-script";
+import Swal from "sweetalert2";
 const SignUp = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
+
   const handleShowPassword = () => {
     setIsShowPassword(!isShowPassword);
   };
+  const clientId =
+    "530113864987-ihglodi7irh0c5ito7m6kk0bvlieoqtm.apps.googleusercontent.com";
+  const { setUser, user } = useContext(AuthContext);
+
+  useEffect(() => {
+    gapi.load("client:auth2", () => {
+      gapi.auth2.init({ clientId: clientId });
+    });
+  }, []);
+  const { signIn } = useGoogleLogin({
+    clientId:
+      "530113864987-ihglodi7irh0c5ito7m6kk0bvlieoqtm.apps.googleusercontent.com",
+    onSuccess: (response) => {
+      console.log("Google Sign-In Success:", response);
+      if (response?.profileObj) {
+        setUser(response.profileObj);
+        fetch("http://localhost:5000/users", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(user),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            if (data.insertedId) {
+              Swal.fire({
+                title: "You are successfully logged in",
+                icon: "success",
+                confirmButtonText: "OK",
+              });
+            }
+          });
+      }
+    },
+    onFailure: (error) => {
+      console.error("Google Sign-In Failure:", error);
+    },
+  });
+
   return (
     <div className="signUp-container">
       <Paper style={{ padding: "20px" }} elevation={3}>
@@ -89,7 +135,7 @@ const SignUp = () => {
             display: "flex",
             justifyContent: "center",
           }}>
-          <Google></Google>
+          <Google onClick={signIn}></Google>
         </div>
       </Paper>
     </div>
