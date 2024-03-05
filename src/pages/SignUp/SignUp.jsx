@@ -15,6 +15,7 @@ import { useGoogleLogin } from "react-google-login";
 import { AuthContext } from "../../providers/AuthProvider";
 import { gapi } from "gapi-script";
 import Swal from "sweetalert2";
+import axios from "axios";
 const SignUp = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
 
@@ -23,31 +24,56 @@ const SignUp = () => {
   };
   const clientId =
     "530113864987-ihglodi7irh0c5ito7m6kk0bvlieoqtm.apps.googleusercontent.com";
-  const { setUser, user } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
 
+  // Email login
+
+  const handleEmailLogin = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    axios
+      .post("http://localhost:5000/users", { email, password })
+      .then((res) => {
+        if (res.data.insertedId) {
+          Swal.fire({
+            title: "You have successfully signUp",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          setUser(res.data);
+        }
+      });
+  };
+  // google login
   useEffect(() => {
-    gapi.load("client:auth2", () => {
-      gapi.auth2.init({ clientId: clientId });
-    });
+    const initializeAuth2 = async () => {
+      let auth2 = gapi.auth2.getAuthInstance();
+
+      if (!auth2) {
+        auth2 = await gapi.auth2.init({ clientId: clientId });
+      }
+    };
+
+    initializeAuth2();
   }, []);
+
   const { signIn } = useGoogleLogin({
     clientId:
       "530113864987-ihglodi7irh0c5ito7m6kk0bvlieoqtm.apps.googleusercontent.com",
     onSuccess: (response) => {
       console.log("Google Sign-In Success:", response);
       if (response?.profileObj) {
-        setUser(response.profileObj);
-        fetch("http://localhost:5000/users", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(user),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-            if (data.insertedId) {
+        const userProfile = response.profileObj;
+        setUser(userProfile);
+        axios
+          .post("http://localhost:5000/users", { userProfile })
+
+          .then((res) => {
+            console.log(res.data);
+            if (res.data.insertedId) {
               Swal.fire({
                 title: "You are successfully logged in",
                 icon: "success",
@@ -69,62 +95,77 @@ const SignUp = () => {
         <Typography variant="h4" align="center" gutterBottom>
           SignUp
         </Typography>
-        <div className="input-container">
-          <InputLabel
-            style={{ color: "black", fontSize: "14px", marginBottom: "none" }}
-            htmlFor="email">
-            Email
-          </InputLabel>
-          <TextField
-            style={{ marginBottom: "20px" }}
-            id="email"
-            type="email"
-            placeholder="Enter Your Email"
-            variant="standard"
-            autoComplete="new-password"
-            fullWidth
-          />
-        </div>
-        <div className="input-container">
-          <InputLabel
-            style={{ color: "black", fontSize: "14px", marginBottom: "none" }}
-            htmlFor="password">
-            Password
-          </InputLabel>
-          <TextField
-            id="password"
-            type={isShowPassword ? "text" : "password"}
-            placeholder="Enter Your Password"
-            variant="standard"
-            autoComplete="new-password"
-            fullWidth
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleShowPassword} edge="end">
-                    {isShowPassword ? (
-                      <VisibilityOff></VisibilityOff>
-                    ) : (
-                      <Visibility></Visibility>
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </div>
-        <div className="btn-signUp-container">
-          <Button
-            sx={{
-              backgroundColor: "#9b1fe9",
-              width: "100%",
-              color: "white",
-            }}>
-            SignUp
-          </Button>
-        </div>
+        <form onSubmit={handleEmailLogin}>
+          <div className="input-container">
+            <InputLabel
+              style={{
+                color: "black",
+                fontSize: "14px",
+                marginBottom: "none",
+              }}
+              htmlFor="email">
+              Email
+            </InputLabel>
+            <TextField
+              style={{ marginBottom: "20px" }}
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Enter Your Email"
+              variant="standard"
+              autoComplete="new-password"
+              fullWidth
+            />
+          </div>
+          <div className="input-container">
+            <InputLabel
+              style={{
+                color: "black",
+                fontSize: "14px",
+                marginBottom: "none",
+              }}
+              htmlFor="password">
+              Password
+            </InputLabel>
+            <TextField
+              id="password"
+              type={isShowPassword ? "text" : "password"}
+              placeholder="Enter Your Password"
+              variant="standard"
+              autoComplete="new-password"
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleShowPassword} edge="end">
+                      {isShowPassword ? (
+                        <VisibilityOff></VisibilityOff>
+                      ) : (
+                        <Visibility></Visibility>
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </div>
+          <div className="btn-login-container">
+            <input
+              style={{
+                backgroundColor: "#9b1fe9",
+                width: "100%",
+                color: "white",
+                padding: "10px 0",
+                borderRadius: "5px",
+                border: 0,
+              }}
+              type="submit"
+              value="SignUp"
+            />
+          </div>
+        </form>
         <p style={{ textAlign: "center" }}>
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <Link style={{ textDecoration: "none" }} to={"/login"}>
             Login
           </Link>

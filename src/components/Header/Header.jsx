@@ -6,11 +6,15 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
+import { useGoogleLogout } from "react-google-login";
+import Swal from "sweetalert2";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState("Ethereum Kovan");
   const [menuIcon, setMenuIcon] = useState(" /images/menuIcon1.webp");
   const [isUserOpen, setIsUserOpen] = useState(false);
+
+  const { setUser } = useContext(AuthContext);
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
@@ -18,6 +22,37 @@ const Header = () => {
     setSelectedValue(value);
     setIsOpen(false);
     setMenuIcon(icon);
+  };
+  const { signOut } = useGoogleLogout({
+    clientId:
+      "530113864987-ihglodi7irh0c5ito7m6kk0bvlieoqtm.apps.googleusercontent.com",
+    onLogoutSuccess: () => {
+      console.log("user logged out successfully");
+      setUser(false);
+      Swal.fire({
+        title: "You are successfully logged out",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      setIsUserOpen(false);
+    },
+    onFailure: (error) => {
+      console.error("LoggedOut fail", error);
+    },
+  });
+
+  const handleLogout = () => {
+    if (user?.googleId) {
+      signOut();
+    } else {
+      setUser(null);
+      Swal.fire({
+        title: "You are successfully logged out",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      setIsUserOpen(false);
+    }
   };
 
   const handleUserToggle = () => {
@@ -196,7 +231,12 @@ const Header = () => {
               {isUserOpen && (
                 <div className="user-dropdown-menu">
                   {user ? (
-                    <div className="user-dropdown-item">Logout</div>
+                    <div
+                      style={{ cursor: "pointer" }}
+                      onClick={handleLogout}
+                      className="user-dropdown-item">
+                      LogOut
+                    </div>
                   ) : (
                     <Link style={{ textDecoration: "none" }} to={"/login"}>
                       <div className="user-dropdown-item">Login</div>
