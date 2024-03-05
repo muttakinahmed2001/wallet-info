@@ -242,7 +242,18 @@ const Header = () => {
                       <div className="user-dropdown-item">Login</div>
                     </Link>
                   )}
-                  <div className="user-dropdown-item">SignUp</div>
+                  <Link style={{ textDecoration: "none" }} to="/signUp">
+                    {" "}
+                    <div className="user-dropdown-item">SignUp</div>
+                  </Link>
+                  {user ? (
+                    <Link to="/dashboard" style={{ textDecoration: "none" }}>
+                      {" "}
+                      <div className="user-dropdown-item">Dashboard</div>
+                    </Link>
+                  ) : (
+                    ""
+                  )}
                   <div className="user-dropdown-item">FAQ</div>
                 </div>
               )}

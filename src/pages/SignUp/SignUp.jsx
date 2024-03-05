@@ -31,11 +31,12 @@ const SignUp = () => {
   const handleEmailLogin = (event) => {
     event.preventDefault();
     const form = event.target;
+    const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
 
     axios
-      .post("http://localhost:5000/users", { email, password })
+      .post("http://localhost:5000/users", { name, email, password })
       .then((res) => {
         if (res.data.insertedId) {
           Swal.fire({
@@ -96,6 +97,27 @@ const SignUp = () => {
           SignUp
         </Typography>
         <form onSubmit={handleEmailLogin}>
+          <div className="input-container">
+            <InputLabel
+              style={{
+                color: "black",
+                fontSize: "14px",
+                marginBottom: "none",
+              }}
+              htmlFor="name">
+              Name
+            </InputLabel>
+            <TextField
+              style={{ marginBottom: "20px" }}
+              id="name"
+              type="name"
+              name="name"
+              placeholder="Enter Your Name"
+              variant="standard"
+              autoComplete="new-password"
+              fullWidth
+            />
+          </div>
           <div className="input-container">
             <InputLabel
               style={{

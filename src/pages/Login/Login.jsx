@@ -69,10 +69,8 @@ const Login = () => {
     onSuccess: (response) => {
       console.log("Google Sign-In Success:", response);
       if (response?.profileObj) {
-        const userProfile = response.profileObj;
-        setUser(userProfile);
         axios
-          .post("http://localhost:5000/users", { userProfile })
+          .post("http://localhost:5000/users", response.profileObj)
 
           .then((res) => {
             console.log(res.data);
