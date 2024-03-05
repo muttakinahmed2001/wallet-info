@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 import { useGoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
@@ -18,6 +18,7 @@ import axios from "axios";
 const Login = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
   const handleShowPassword = () => {
     setIsShowPassword(!isShowPassword);
   };
@@ -33,7 +34,7 @@ const Login = () => {
     const password = form.password.value;
 
     axios
-      .post("http://localhost:5000/login", { email, password })
+      .post("https://task-w3-server.vercel.app/login", { email, password })
       .then((result) => {
         if (result.data.status === "Email is not registered") {
           setError("Email is not registered");
@@ -43,7 +44,9 @@ const Login = () => {
             icon: "success",
             confirmButtonText: "OK",
           });
+
           setUser(result.data.user);
+          navigate("/");
           setError("");
         } else {
           setError("Password is incorrect");
@@ -70,7 +73,7 @@ const Login = () => {
       console.log("Google Sign-In Success:", response);
       if (response?.profileObj) {
         axios
-          .post("http://localhost:5000/users", response.profileObj)
+          .post("https://task-w3-server.vercel.app/users", response.profileObj)
 
           .then((res) => {
             console.log(res.data);
@@ -81,6 +84,9 @@ const Login = () => {
                 confirmButtonText: "OK",
               });
             }
+            navigate("/");
+
+            setUser(response.profileObj);
           });
       }
     },

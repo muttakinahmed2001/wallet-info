@@ -1,4 +1,12 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { useContext, useState } from "react";
 import "./Header.css";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -8,6 +16,8 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 import { useGoogleLogout } from "react-google-login";
 import Swal from "sweetalert2";
+import CloseIcon from "@mui/icons-material/Close";
+
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState("Ethereum Kovan");
@@ -18,6 +28,16 @@ const Header = () => {
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
   const handleSelectItem = (value, icon) => {
     setSelectedValue(value);
     setIsOpen(false);
@@ -219,10 +239,67 @@ const Header = () => {
                 </div>
               )}
             </div>
-            <button className="wallet-button">
+            <button className="wallet-button" onClick={handleOpenModal}>
               <AccountBalanceWalletIcon></AccountBalanceWalletIcon>
               Connect Wallet
             </button>
+            <Dialog open={openModal} onClose={handleCloseModal}>
+              <DialogTitle>
+                <IconButton
+                  onClick={handleCloseModal}
+                  sx={{ position: "absolute", right: 8, top: 8 }}>
+                  <CloseIcon />
+                </IconButton>
+              </DialogTitle>
+              <DialogContent>
+                <Typography style={{ fontSize: "25px", fontWeight: "600" }}>
+                  Connect your wallet here
+                </Typography>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <div
+                    style={{
+                      padding: "20px",
+                      backgroundColor: "#f5f7fd",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontSize: "18px",
+                      fontWeight: "600",
+                      color: "#9b1fe9",
+                      margin: "10px",
+                    }}>
+                    <img
+                      style={{ height: "100px", width: "100px" }}
+                      src="/images/modal1.png"
+                      alt=""
+                    />
+                    MetaMask
+                  </div>
+                  <div
+                    style={{
+                      padding: "20px",
+                      backgroundColor: "#f5f7fd",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontSize: "18px",
+                      fontWeight: "600",
+                      color: "#9b1fe9",
+                      margin: "10px",
+                    }}>
+                    <img
+                      style={{ height: "100px", width: "100px" }}
+                      src="/images/modal2.svg"
+                      alt=""
+                    />
+                    WalletConnect
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
             <div className="user-dropdown-container">
               <button className="btn-user" onClick={handleUserToggle}>
                 <AccountCircleOutlinedIcon></AccountCircleOutlinedIcon>
@@ -254,7 +331,9 @@ const Header = () => {
                   ) : (
                     ""
                   )}
-                  <div className="user-dropdown-item">FAQ</div>
+                  <Link style={{ textDecoration: "none" }} to="/faq">
+                    <div className="user-dropdown-item">FAQ</div>
+                  </Link>
                 </div>
               )}
             </div>

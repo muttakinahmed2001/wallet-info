@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import "./SignUp.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "react-google-login";
 import { AuthContext } from "../../providers/AuthProvider";
 import { gapi } from "gapi-script";
@@ -18,6 +18,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 const SignUp = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleShowPassword = () => {
     setIsShowPassword(!isShowPassword);
@@ -36,7 +37,11 @@ const SignUp = () => {
     const password = form.password.value;
 
     axios
-      .post("http://localhost:5000/users", { name, email, password })
+      .post("https://task-w3-server.vercel.app/users", {
+        name,
+        email,
+        password,
+      })
       .then((res) => {
         if (res.data.insertedId) {
           Swal.fire({
@@ -45,6 +50,7 @@ const SignUp = () => {
             confirmButtonText: "OK",
           });
           setUser(res.data);
+          navigate("/");
         }
       });
   };
@@ -67,10 +73,8 @@ const SignUp = () => {
     onSuccess: (response) => {
       console.log("Google Sign-In Success:", response);
       if (response?.profileObj) {
-        const userProfile = response.profileObj;
-        setUser(userProfile);
         axios
-          .post("http://localhost:5000/users", { userProfile })
+          .post("https://task-w3-server.vercel.app/users", response.profileObj)
 
           .then((res) => {
             console.log(res.data);
@@ -81,6 +85,8 @@ const SignUp = () => {
                 confirmButtonText: "OK",
               });
             }
+            setUser(response.profileObj);
+            navigate("/");
           });
       }
     },
